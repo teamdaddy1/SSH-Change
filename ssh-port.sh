@@ -7,11 +7,11 @@ echo "--------------------------------------"
 # Fetch VPS username
 USERNAME=$(whoami)
 
-# Fetch IPv4 only
-SERVER_IPV4=$(curl -4 -s ifconfig.me)
+# Fetch IPv4 only (never returns IPv6)
+SERVER_IPV4=$(curl -s https://ipv4.icanhazip.com || echo "No IPv4 detected")
 
-# Fetch IPv6 only (fallback if none)
-SERVER_IPV6=$(curl -6 -s ifconfig.me || echo "No IPv6 detected")
+# Fetch IPv6 only (never returns IPv4)
+SERVER_IPV6=$(curl -s https://ipv6.icanhazip.com || echo "No IPv6 detected")
 
 # Menu
 echo "Select an option:"
@@ -65,7 +65,7 @@ if [[ "$CHOICE" == "1" ]]; then
     echo "Connect using IPv6:"
     echo "ssh $USERNAME@[$SERVER_IPV6] -p $SSH_PORT"
     echo ""
-    echo "⚠️ DO NOT close this SSH session until you confirm the new port works!"
+    echo "⚠️ DO NOT close this session until you confirm the new SSH port works!"
     exit 0
 fi
 
