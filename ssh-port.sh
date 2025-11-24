@@ -7,8 +7,11 @@ echo "--------------------------------------"
 # Fetch VPS username
 USERNAME=$(whoami)
 
-# Fetch Public IP
-SERVER_IP=$(curl -s ifconfig.me)
+# Fetch IPv4 only
+SERVER_IPV4=$(curl -4 -s ifconfig.me)
+
+# Fetch IPv6 only (fallback if none)
+SERVER_IPV6=$(curl -6 -s ifconfig.me || echo "No IPv6 detected")
 
 # Menu
 echo "Select an option:"
@@ -52,13 +55,17 @@ if [[ "$CHOICE" == "1" ]]; then
     echo "✅ SSH port has been successfully changed!"
     echo "----------------------------------------------"
     echo " ➤ Username : $USERNAME"
-    echo " ➤ Server IP : $SERVER_IP"
+    echo " ➤ IPv4     : $SERVER_IPV4"
+    echo " ➤ IPv6     : $SERVER_IPV6"
     echo " ➤ New SSH Port : $SSH_PORT"
     echo "----------------------------------------------"
-    echo "Connect using:"
-    echo "ssh $USERNAME@$SERVER_IP -p $SSH_PORT"
+    echo "Connect using IPv4:"
+    echo "ssh $USERNAME@$SERVER_IPV4 -p $SSH_PORT"
     echo ""
-    echo "⚠️ Do NOT close this session until you confirm the new SSH port works!"
+    echo "Connect using IPv6:"
+    echo "ssh $USERNAME@[$SERVER_IPV6] -p $SSH_PORT"
+    echo ""
+    echo "⚠️ DO NOT close this SSH session until you confirm the new port works!"
     exit 0
 fi
 
@@ -79,7 +86,7 @@ if [[ "$CHOICE" == "2" ]]; then
     echo ""
     echo "➡ Removing SSH port $DEL_PORT from sshd_config..."
 
-    # Remove all Port entries and reset to default (22)
+    # Remove all Port entries and reset to default (commented)
     sed -i "/^Port $DEL_PORT/d" /etc/ssh/sshd_config
     sed -i "s/^Port .*/#Port 22/" /etc/ssh/sshd_config
 
@@ -94,7 +101,8 @@ if [[ "$CHOICE" == "2" ]]; then
     echo "🛑 SSH port $DEL_PORT has been removed & blocked!"
     echo "----------------------------------------------"
     echo " ➤ Username : $USERNAME"
-    echo " ➤ Server IP : $SERVER_IP"
+    echo " ➤ IPv4     : $SERVER_IPV4"
+    echo " ➤ IPv6     : $SERVER_IPV6"
     echo " ➤ Removed SSH Port : $DEL_PORT"
     echo "----------------------------------------------"
     echo "SSH now works only on the remaining allowed ports."
