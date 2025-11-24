@@ -24,4 +24,4 @@ You can change your SSH port anytime simply by running the command below.
 Run the command below:
 
 ```bash
-bash <(curl -s https://raw.githubusercontent.com/USERNAME/REPO/main/sshport.sh)
+bash <(curl -s https://raw.githubusercontent.com/teamdaddy1/SSH-Change/main/ssh-port.sh)
